@@ -1,7 +1,8 @@
 import _ from 'lodash';
 import inflection from 'lodash-inflection';
-import Fetchable from './fetchable';
+
 import Constants from './constants';
+import Fetchable from './fetchable';
 
 _.mixin(inflection);
 
@@ -9,11 +10,11 @@ const t = Constants.apiTemplates;
 
 export default class CrudApi extends Fetchable {
   routes;
-  name;
-  one;
-  many;
+  name: string;
+  one: string;
+  many: string;
 
-  constructor(name, routes = {}) {
+  constructor(name: string, routes = {}) {
     super();
 
     this.routes = _.merge({}, t, routes);
@@ -22,39 +23,39 @@ export default class CrudApi extends Fetchable {
     this.many = _(name).pluralize().toLower();
   }
 
-  count(includeDeleted = false) {
+  count(includeDeleted: boolean = false): Fetchable {
     const body = new URLSearchParams();
-    body.set('includeDeleted', includeDeleted);
+    body.set('includeDeleted', includeDeleted.toString());
 
     return super
       .get(`${this.routes.COUNT(this.name)}?${body}`)
       .then(json => json.result);
   }
 
-  list(skip = 0, take = 25, includeDeleted = false) {
+  list(skip: number = 0, take: number = 25, includeDeleted: boolean = false) {
     const body = new URLSearchParams();
-    body.set('skip', skip);
+    body.set('skip', skip.toString());
     // body.set('take', take);
-    body.set('includeDeleted', includeDeleted);
+    body.set('includeDeleted', includeDeleted.toString());
 
     return super
       .get(`${this.routes.LIST(this.name)}?${body}`)
       .then(json => json.result || json[this.many]);
   }
 
-  single(id, includeDeleted = false) {
+  single(id: number, includeDeleted: boolean = false) {
     const body = new URLSearchParams();
-    body.set('includeDeleted', includeDeleted);
+    body.set('includeDeleted', includeDeleted.toString());
 
     return super
       .get(`${this.routes.SINGLE(this.name)}/${id}?${body}`)
       .then(json => json.result || json[this.one]);
   }
 
-  typeahead(query, includeDeleted = false) {
+  typeahead(query, includeDeleted: boolean = false) {
     const body = new URLSearchParams();
     body.set('query', query);
-    body.set('includeDeleted', includeDeleted);
+    body.set('includeDeleted', includeDeleted.toString());
 
     return super
       .search(`${this.routes.TYPEAHEAD(this.name)}?${body}`)
@@ -104,7 +105,7 @@ export default class CrudApi extends Fetchable {
       .then(json => json.result || json[this.many]);
   }
 
-  delete(id, rowVersion) {
+  delete(id:number, rowVersion: number) {
     if (id < 1) {
       throw new Error('id must be >= 1');
     }
@@ -112,7 +113,7 @@ export default class CrudApi extends Fetchable {
       throw new Error('rowVersion must be >= 1');
     }
     const body = new URLSearchParams();
-    body.set('rowVersion', rowVersion);
+    body.set('rowVersion', rowVersion.toString());
     return super
       .delete(`${this.routes.DELETE(this.name)}/${id}?${body}`)
       .then(json => json.result || json[this.one]);

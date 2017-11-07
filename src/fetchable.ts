@@ -15,35 +15,35 @@ export default class Fetchable {
     this.fetch = fetcher || fetch;
   }
 
-  request(verb, url, options = {}) {
+  request(verb: string, url: string, options = {}) {
     const opts = _.merge({}, options);
     opts.method = _(verb).toUpper();
     return this._fetch(url, this.prepare(opts));
   }
 
-  get(url, options = {}) {
+  get(url: string, options = {}) {
     return this.request('GET', url, options);
   }
 
-  put(url, options = {}) {
+  put(url: string, options = {}) {
     return this.request('PUT', url, options);
   }
 
-  post(url, options = {}) {
+  post(url: string, options = {}) {
     return this.request('POST', url, options);
   }
 
-  patch(url, options = {}) {
+  patch(url: string, options = {}) {
     return this.request('PATCH', url, options);
   }
 
   // I think this flow error is due to the override in CrudApi changing the param types
   // $FlowFixMe
-  delete(url, options = {}) {
+  delete(url: string, options = {}) {
     return this.request('DELETE', url, options);
   }
 
-  search(url, options = {}) {
+  search(url: string, options = {}) {
     return this.request('SEARCH', url, options);
   }
 
@@ -69,7 +69,7 @@ export default class Fetchable {
     }
   }
 
-  _fetch(url, options) {
+  _fetch(url: string, options: object): GlobalFetch {
     if (!url) {
       throw new Error('url may not be empty');
     }
@@ -85,19 +85,19 @@ export default class Fetchable {
       .catch(e => getErrorCodeHandler(e)());
   }
 
-  toForm(body) {
+  toForm(body: object) {
     const form = new FormData();
-    _.each(body, (v, k) => {
+    _.each(body, (v: string, k: string) => {
       form.append(k, v);
     });
     return form;
   }
 
-  toJson(body) {
+  toJson(body: object) {
     return JSON.stringify(body);
   }
 
-  prepareXhr(xhr) {
+  prepareXhr(xhr: XMLHttpRequest) {
     const defaults = {
       headers: {
         Accept: 'application/json',
@@ -106,7 +106,7 @@ export default class Fetchable {
     };
 
     xhr.withCredentials = false;
-    _.each(defaults.headers, (v, k) => {
+    _.each(defaults.headers, (v: string, k: string) => {
       xhr.setRequestHeader(k, v);
     });
   }
