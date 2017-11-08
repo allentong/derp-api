@@ -1,21 +1,21 @@
-import _ from 'lodash';
-import fetch from 'isomorphic-fetch';
+import * as _ from 'lodash';
+import * as isoFetch from 'isomorphic-fetch';
 import getErrorCodeHandler from './errorCodes';
 import Configuration from './configuration';
 
 export default class Fetchable {
-  baseUrl = ''
-  fetch = null
+  baseUrl: string = ''
+  f: any = null
 
-  constructor(baseUrl = Configuration.apiRoot, fetcher = fetch) {
+  constructor(baseUrl = Configuration.apiRoot, fetcher = isoFetch) {
     if (!baseUrl || baseUrl === '') {
       throw new Error('baseUrl may not be empty');
     }
     this.baseUrl = baseUrl;
-    this.fetch = fetcher || fetch;
+    this.f = fetcher;
   }
 
-  request(verb: string, url: string, options = {}) {
+  request(verb: string, url: string, options: any= {}) {
     const opts = _.merge({}, options);
     opts.method = _(verb).toUpper();
     return this._fetch(url, this.prepare(opts));
@@ -37,8 +37,6 @@ export default class Fetchable {
     return this.request('PATCH', url, options);
   }
 
-  // I think this flow error is due to the override in CrudApi changing the param types
-  // $FlowFixMe
   delete(url: string, options = {}) {
     return this.request('DELETE', url, options);
   }
@@ -47,14 +45,14 @@ export default class Fetchable {
     return this.request('SEARCH', url, options);
   }
 
-  deserialize(response) {
+  deserialize(response: any) {
     if (response.ok) {
-      return response.json().then((json) => {
+      return response.json().then((json: JSON) => {
         return {
           json,
           response
         };
-      }).catch((e) => {
+      }).catch((e: Error) => {
         return {
           json: {},
           error: e,
@@ -69,20 +67,20 @@ export default class Fetchable {
     }
   }
 
-  _fetch(url: string, options: object): GlobalFetch {
+  _fetch(url: string, options: object) {
     if (!url) {
       throw new Error('url may not be empty');
     }
-    return this.fetch(this.baseUrl + url, options)
-      .then(response => this.deserialize(response))
+    return this.f(this.baseUrl + url, options)
+      .then((response: any) => this.deserialize(response))
       .then(({
         response,
         json
-      }) => {
+      }: any) => {
         getErrorCodeHandler(response)();
         return json;
       })
-      .catch(e => getErrorCodeHandler(e)());
+      .catch((e: Error) => getErrorCodeHandler(e)());
   }
 
   toForm(body: object) {
@@ -111,7 +109,7 @@ export default class Fetchable {
     });
   }
 
-  prepare(options) {
+  prepare(options: any) {
     const defaults = {
       headers: {
         Accept: 'application/json',

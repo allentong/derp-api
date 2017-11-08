@@ -1,3 +1,4 @@
+import { Error } from 'tslint/lib/error';
 class config {
   token = '';
   apiRoot = '';
@@ -7,7 +8,7 @@ class config {
     credentials: 'omit',
   };
 
-  globalErrorHandler = (e, statusCode, message) => {
+  globalErrorHandler = (e: Error, statusCode: number, message: string) => {
     console.error(e, statusCode, message);
     if (this.throwErrors) {
       throw e;
