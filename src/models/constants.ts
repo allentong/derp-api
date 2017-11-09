@@ -1,9 +1,11 @@
-import _ from 'lodash';
+import * as _ from 'lodash';
 import inflection from 'lodash-inflection';
+
+import IConstants from '../interfaces/IConstants';
 
 _.mixin(inflection);
 
-const constants = {
+const constants: IConstants = {
   apiTemplates: {
     COUNT: (x: string): string => `/api/v1/${_(x).pluralize().toLower()}/count`,
     CREATE: (x: string): string => `/api/v1/${_(x).pluralize().toLower()}`,
@@ -15,7 +17,7 @@ const constants = {
     TYPEAHEAD: (x: string): string => `/api/v1/${_(x).pluralize().toLower()}/typeahead`,
   },
 
-  add(name: string) {
+  add(name: string): void {
     if (constants[name]) {
       throw new Error(`Adding ${name} would overwrite existing constant.`);
     }

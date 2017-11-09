@@ -3,14 +3,14 @@ export class FetchError extends Error {
     statusCode,
     body,
     contentType
-  }, message, fileName, lineNumber) {
+  }: any, message: string, fileName: string, lineNumber: string) {
     super(message, fileName, lineNumber);
     this.statusCode = statusCode;
     this.body = body;
     this.contentType = contentType;
   }
 
-  field(x) {
+  field(x: string) {
     let val;
     if (this.isJson() && this.hasBody()) {
       val = this.body.responseStatus[x];
@@ -18,7 +18,7 @@ export class FetchError extends Error {
     return val;
   }
 
-  get isJson() {
+  get isJson(): boolean {
     return this.contentType === 'application/json';
   }
 

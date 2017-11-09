@@ -4,22 +4,22 @@ import Constants from './constants';
 let singleton = null;
 
 export default class Auth extends Fetchable {
+  private static _instance: Auth;
+
   constructor() {
     super();
 
-    if (singleton) {
-      return singleton;
+    if (!Auth._instance) {
+      Auth._instance = new Auth();
+      return this;
     }
-    singleton = this;
-
-    return singleton;
   }
 
-  register(username,
-    password,
-    email,
-    firstName,
-    lastName) {
+  register(username: string,
+    password: string,
+    email: string,
+    firstName: string,
+    lastName: string): Promise<object> {
     return super.post('/register', {
         body: this.toForm({
           username,
@@ -29,28 +29,28 @@ export default class Auth extends Fetchable {
           lastName
         })
       })
-      .then((json) => {
+      .then((json: any) => {
         return this.setUser(json);
       });
   }
 
-  login(username, password) {
+  login(username: string, password: string): Promise<object> {
     return super.post('/auth/credentials', {
         body: this.toForm({
           username,
           password
         })
       })
-      .then((json) => {
+      .then((json: any) => {
         return this.setUser(json);
       });
   }
 
-  logout() {
+  logout(): Promise<object> {
     return super.delete('/auth/credentials');
   }
 
-  setUser(response) {
+  setUser(response: any) {
     const isAuthenticated = !!response.sessionId;
     const user = {
       isAuthenticated: false,
@@ -67,27 +67,27 @@ export default class Auth extends Fetchable {
     return user;
   }
 
-  profile() {
+  profile(): Promise<object> {
     return super.get('/api/v1/me')
-      .then(json => json.result);
+      .then((json: any) => json.result);
   }
 
-  forgotPassword(email) {
+  forgotPassword(email: string): Promise<object> {
     return super.post('/api/v1/password/forgot', {
         body: this.toForm({
           email
         })
       })
-      .then((json) => {
+      .then((json: any) => {
         return json;
       });
   }
 
   resetPassword(
-    email,
-    token,
-    password,
-    passwordRepeat) {
+    email: string,
+    token: string,
+    password: string,
+    passwordRepeat: string): Promise<object> {
     return super.post('/api/v1/password/reset', {
       body: this.toForm({
         email,

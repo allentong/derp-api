@@ -1,16 +1,14 @@
 import CrudApi from './base';
 
-let singleton  = null;
-
 export default class Sale extends CrudApi {
+  private static _instance: Sale;
+
   constructor() {
     super('sale');
 
-    if (singleton) {
-      return singleton;
+    if (!Sale._instance) {
+      Sale._instance = new Sale();
+      return this;
     }
-    singleton = this;
-
-    return singleton;
   }
 }

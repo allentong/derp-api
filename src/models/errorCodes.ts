@@ -3,7 +3,9 @@ import {
 } from './errors';
 import Configuration from './configuration';
 
-const knownCodes = {
+import IKnownCodes from '../interfaces/IKnownCodes';
+
+const knownCodes: IKnownCodes = {
   302: 'Redirect',
   400: 'Validation',
   401: 'Unauthorized',
@@ -24,7 +26,7 @@ export default function getErrorCodeHandler(response = {}) {
 
   const {
     status
-  } = response;
+  }: any = response;
   const message = knownCodes[status];
   if (message) {
     return () => Configuration.globalErrorHandler(new FetchError(response, message), status, message);
